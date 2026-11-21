@@ -1,0 +1,180 @@
+{
+  "window": {
+    "start": "2006-01-04",
+    "end": "2010-12-20",
+    "n_obs": 1250,
+    "first_forecast_date": "2010-12-21"
+  },
+  "tickers": [
+    "SPY",
+    "EEM",
+    "TLT",
+    "GLD"
+  ],
+  "ties_per_asset": {
+    "SPY": 1,
+    "EEM": 6,
+    "TLT": 6,
+    "GLD": 8
+  },
+  "kendall_tau": [
+    [
+      1.0,
+      0.666133,
+      -0.237104,
+      0.087146
+    ],
+    [
+      0.666133,
+      1.0,
+      -0.221084,
+      0.17429
+    ],
+    [
+      -0.237104,
+      -0.221084,
+      1.0,
+      0.026641
+    ],
+    [
+      0.087146,
+      0.17429,
+      0.026641,
+      1.0
+    ]
+  ],
+  "latent_R_raw": [
+    [
+      1.0,
+      0.865606,
+      -0.363892,
+      0.136462
+    ],
+    [
+      0.865606,
+      1.0,
+      -0.340339,
+      0.270367
+    ],
+    [
+      -0.363892,
+      -0.340339,
+      1.0,
+      0.041835
+    ],
+    [
+      0.136462,
+      0.270367,
+      0.041835,
+      1.0
+    ]
+  ],
+  "latent_R_used": [
+    [
+      1.0,
+      0.865606,
+      -0.363892,
+      0.136462
+    ],
+    [
+      0.865606,
+      1.0,
+      -0.340339,
+      0.270367
+    ],
+    [
+      -0.363892,
+      -0.340339,
+      1.0,
+      0.041835
+    ],
+    [
+      0.136462,
+      0.270367,
+      0.041835,
+      1.0
+    ]
+  ],
+  "min_eigenvalue_raw": 0.12356969961850256,
+  "min_eigenvalue_used": 0.12356969961850256,
+  "pd_correction_applied": false,
+  "pd_correction_frobenius_change": 0.0,
+  "student_t_df": {
+    "status": "converged",
+    "nu": 4.293589097968556,
+    "bounds": [
+      2.0,
+      100.0
+    ],
+    "optimizer": "scipy.optimize.minimize_scalar(method='bounded', xatol=1e-6)",
+    "optimizer_success": true,
+    "optimizer_message": "Solution found.",
+    "n_function_evals": 18,
+    "grid_check_best_nu": 4.4318312642711275,
+    "grid_check_best_loglik": 1183.7805745532569,
+    "fit_seconds": 0.21670624699999053
+  },
+  "pseudo_loglik": {
+    "gaussian_copula": 1047.3447633696737,
+    "student_t_copula": 1183.873057192883,
+    "difference": 136.5282938232092,
+    "LR_statistic": 273.0565876464184,
+    "AIC_gaussian": -2094.6895267393475,
+    "AIC_student_t": -2365.746114385766,
+    "note": "In-sample, pseudo-likelihood with R fixed from Kendall's tau. The Gaussian copula is the nu->inf boundary of the t family, so the usual chi2(1) reference does not apply; reported descriptively."
+  },
+  "implied_tail_dependence_t": [
+    [
+      1.0,
+      0.562486,
+      0.01824,
+      0.098058
+    ],
+    [
+      0.562486,
+      1.0,
+      0.0202,
+      0.138417
+    ],
+    [
+      0.01824,
+      0.0202,
+      1.0,
+      0.07546
+    ],
+    [
+      0.098058,
+      0.138417,
+      0.07546,
+      1.0
+    ]
+  ],
+  "clamped_share_main_simulation": {
+    "gaussian": {
+      "SPY": 0.00168,
+      "EEM": 0.00157,
+      "TLT": 0.00164,
+      "GLD": 0.001545
+    },
+    "t": {
+      "SPY": 0.00176,
+      "EEM": 0.001665,
+      "TLT": 0.00165,
+      "GLD": 0.001635
+    }
+  },
+  "expected_clamped_share_per_asset": 0.0015987210231814548,
+  "runtime_seconds": {
+    "full_fit_marginals_tau_R_nu": 0.2233549000000039,
+    "df_optimisation_incl_grid": 0.21670624699999053,
+    "simulate_gaussian_200000": 0.1052637389999802,
+    "simulate_t_200000": 0.3288844359999814
+  },
+  "simulation": {
+    "seed": 20261121,
+    "n_scenarios": 200000,
+    "common_random_numbers": true,
+    "stability_reps": 20,
+    "stability_n": 100000
+  }
+}

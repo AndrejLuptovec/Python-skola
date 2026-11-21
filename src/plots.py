@@ -193,3 +193,76 @@ def fig_backtest(forecasts: pd.DataFrame, losses: pd.Series, path):
     fig.tight_layout()
     fig.savefig(path)
     plt.close(fig)
+
+
+def fig_copula_initial_window(u_obs, sims, window_losses, dff, rho_spy_eem, path):
+    """Do the two copulas (identical marginals, identical R) differ in the joint
+    lower tail, and how do they compare with the calibration window itself?"""
+    from .copula import t_tail_dependence
+
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.3))
+    colors = {"gaussian": C["orange"], "t": C["aqua"]}
+    names = {"gaussian": "Gaussian copula", "t": f"Student-t copula (ν={dff.nu:.2f})"}
+
+    # A. conditional co-crash probability, SPY | EEM
+    ax = axes[0]
+    qs = np.linspace(0.01, 0.20, 39)
+    n = len(u_obs)
+    emp = [np.mean(u_obs[u_obs[:, 1] <= q, 0] <= q) for q in qs]
+    cnt = [int((u_obs[:, 1] <= q).sum()) for q in qs]
+    ax.plot(qs, emp, color=C["blue"], marker="o", ms=3, lw=1.2, label="Calibration window (pseudo-obs.)")
+    for kind, (u, _) in sims.items():
+        sim = [np.mean(u[u[:, 1] <= q, 0] <= q) for q in qs]
+        ax.plot(qs, sim, color=colors[kind], label=names[kind])
+    if "t" in sims:
+        lam = float(t_tail_dependence(rho_spy_eem, dff.nu))
+        ax.axhline(lam, color=colors["t"], ls=":", lw=1)
+        ax.annotate(f"t-copula limit λ = {lam:.2f}", (0.20, lam), xytext=(0, -12),
+                    textcoords="offset points", ha="right", fontsize=8, color=C["ink2"])
+    ax.xaxis.set_major_formatter(PCT)
+    ax.yaxis.set_major_formatter(PCT)
+    ax.set_ylim(0, 1)
+    ax.xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(0.05))
+    ax.set_xlabel("Tail probability q")
+    ax.set_ylabel("P(SPY ≤ q-quantile | EEM ≤ q-quantile)")
+    ax.set_title("A. SPY/EEM conditional co-crash")
+    ax.legend(loc="upper right")
+    ax.text(0.99, 0.02, f"window n = {n}; at q = 1 % the empirical point rests on {cnt[0]} days",
+            transform=ax.transAxes, ha="right", fontsize=7.5, color=C["muted"])
+
+    # B. portfolio loss tail
+    ax = axes[1]
+    def surv(l):
+        s = np.sort(l)
+        p = 1.0 - np.arange(1, len(s) + 1) / (len(s) + 1)
+        k = s > 0
+        return s[k], p[k]
+    ax.semilogy(*surv(window_losses), color=C["blue"], lw=1.2, label="Calibration window")
+    for kind, (_, l) in sims.items():
+        ax.semilogy(*surv(l), color=colors[kind], label=names[kind])
+    ax.axhline(0.01, color=C["muted"], lw=0.8, ls=":")
+    ax.set_ylim(1e-4, 1)
+    ax.xaxis.set_major_formatter(PCT)
+    ax.set_xlabel("Portfolio loss threshold x")
+    ax.set_ylabel("P(L > x) (log scale)")
+    ax.set_title("B. Simulated one-day portfolio loss tail")
+    ax.legend(loc="lower left")
+
+    # C. profile pseudo-likelihood
+    ax = axes[2]
+    ax.semilogx(dff.profile_nu, dff.profile_loglik, color=C["aqua"], label="t-copula profile")
+    ax.axhline(dff.loglik_gaussian, color=C["orange"], ls="--", lw=1.2,
+               label="Gaussian copula (ν → ∞)")
+    if dff.usable:
+        ax.scatter([dff.nu], [dff.loglik_t], s=36, color=C["ink"], zorder=3,
+                   label=f"Optimum ν = {dff.nu:.2f} ({dff.status})")
+    ax.set_xlabel("Degrees of freedom ν (log scale), same R")
+    ax.set_ylabel("Pseudo-log-likelihood")
+    ax.set_title("C. Degrees-of-freedom fit")
+    ax.legend(loc="upper right")
+
+    fig.suptitle("Initial calibration window 2006-01-04 … 2010-12-20 (in-sample methodology check, "
+                 "not an out-of-sample result)", x=0.01, ha="left", fontsize=10, color=C["ink2"])
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
