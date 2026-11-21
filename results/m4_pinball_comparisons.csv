@@ -1,0 +1,13 @@
+sample,analysis,level,comparison,mean_diff_x1e4,ci95_low_x1e4,ci95_high_x1e4,relative_diff,boot_p_two_sided,block_length,n_resamples
+"out-of-sample, EWMA-overlay robustness check (secondary)","M3 (no overlay, primary result)",0.99,Student-t copula - Gaussian copula,0.0273514,0.0109935,0.0403544,0.00923465,0.0015,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)",EWMA overlay (secondary),0.99,Student-t copula - Gaussian copula,0.00194252,-0.0138057,0.0147207,0.000818412,0.802,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.99,Gaussian parametric,-0.359027,-1.15914,0.14246,-0.1233,0.3165,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.99,Historical simulation,-0.534311,-1.36299,-0.0213585,-0.181875,0.099,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.99,Gaussian copula,-0.588305,-1.40751,-0.0825699,-0.198629,0.068,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.99,Student-t copula,-0.613714,-1.42775,-0.112854,-0.205312,0.0565,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","M3 (no overlay, primary result)",0.95,Student-t copula - Gaussian copula,-0.0182832,-0.0311347,-0.00420818,-0.00215438,0.009,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)",EWMA overlay (secondary),0.95,Student-t copula - Gaussian copula,0.00907358,-0.00146478,0.0202392,0.00118007,0.105,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.95,Gaussian parametric,-0.888611,-1.47237,-0.437511,-0.103757,0.002,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.95,Historical simulation,-0.715096,-1.29701,-0.265007,-0.0845344,0.0075,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.95,Gaussian copula,-0.797568,-1.38588,-0.353287,-0.0939801,0.0035,20,2000
+"out-of-sample, EWMA-overlay robustness check (secondary)","EWMA minus original, same model (descriptive)",0.95,Student-t copula,-0.770211,-1.36094,-0.324881,-0.0909525,0.0045,20,2000

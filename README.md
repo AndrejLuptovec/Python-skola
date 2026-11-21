@@ -10,9 +10,11 @@ specification is in [`PROJECT_SPEC.md`](PROJECT_SPEC.md) (v1.0, unchanged).
   passed scientific review.
 * Milestone 2 (controlled Gaussian vs Student-t copula implementation) passed
   scientific review.
-* **Milestone 3 is complete.** It runs the full out-of-sample walk-forward
-  comparison of all four models. It is waiting for scientific review.
-  Conclusions have not been drafted yet.
+* Milestone 3 (full out-of-sample comparison of four models) passed scientific
+  review. **Its result is the primary finding.**
+* **Milestone 4 is complete.** It adds a common EWMA volatility overlay as a
+  secondary robustness check. It is waiting for scientific review. The final
+  report has not been drafted yet.
 
 ---
 
@@ -25,7 +27,8 @@ python -m src.fetch_data        # downloads the pinned CSV and verifies its SHA-
 python -m src.run_milestone1    # Milestone 1 tables/figures (deterministic)
 python -m src.run_milestone2    # Milestone 2 copula fit on the first window (~10 s)
 python -m src.run_milestone3    # Milestone 3 out-of-sample backtest, 4 models (~4 min)
-python -m pytest                # 60 tests: data, formulas, no-leakage, copulas, scoring
+python -m src.run_milestone4    # Milestone 4 EWMA overlay robustness check (~10 s)
+python -m pytest                # 67 tests: data, formulas, no-leakage, copulas, scoring, EWMA
 ```
 
 Run all commands from the repository root. `run_milestone1` has no random
@@ -454,6 +457,111 @@ error does not drive the result.
    be the formal extension.
 4. **Exploratory comparisons** are not corrected for multiple testing.
 
+## Milestone 4: common EWMA volatility overlay (robustness check, secondary)
+
+> **This is a secondary, OUT-OF-SAMPLE sensitivity analysis.** It does not
+> replace the Milestone 3 result, which remains the primary finding. Milestones
+> 1–3 (code, forecasts and results) are unchanged. `run_milestone4` reads the
+> saved Milestone 3 forecasts and verifies them against Milestone 1.
+
+### Method (`src/ewma.py`, all choices fixed in advance)
+
+**What this is.** A simple, **zero-conditional-mean, portfolio-level
+volatility-scaling approximation**. It is not an asset-level GARCH filter, and
+the copulas are not refitted. Calibration windows, marginals, R and ν are
+exactly those of Milestone 3.
+
+* **EWMA volatility.**
+  `σ²_t = 0.94·σ²_{t−1} + 0.06·r²_{p,t−1}`, where r_p is the fixed-weight
+  portfolio return.
+  * σ_t uses only returns before day t.
+  * λ = 0.94 was fixed by the review request and was **not tuned**.
+* **Initialisation.** σ² at 2007-01-03 (return position 250) is the zero-mean
+  variance of the first 250 returns (2006-01-04 … 2007-01-02). The first
+  forecast follows 1,000 recursions later, where the initial value carries
+  weight 0.94¹⁰⁰⁰ ≈ 10⁻²⁷.
+* **Scaling.** `k_t = σ_EWMA,t / sd(1,250 calibration portfolio returns)`,
+  using the sample sd with ddof = 1.
+  * Then `VaR*_t = k_t·VaR_t` and `ES*_t = k_t·ES_t`.
+  * The **same** k_t is applied to all four models.
+* **Distribution of k_t.** The median is 0.76 and the range is 0.27
+  (2013-03-26) to 5.39 (2020-03-25). k_t < 1 on 77 % of days, because the
+  calibration windows contain past crises.
+* **Evaluation.** All four models are evaluated on the same 3,780 dates and
+  losses with the same tests, pinball loss and block bootstrap (20-day blocks,
+  2,000 resamples) as Milestone 3.
+
+### Before/after (`results/m4_before_after_summary.csv`)
+
+Columns show the original forecast → the EWMA-adjusted forecast.
+
+| model | level | exceedances (exp.) | Kupiec p | Christoffersen ind. p | mean pinball ×10⁻⁴ |
+|---|---|---|---|---|---|
+| Gaussian parametric | 95 % | 146 → 201 (189) | 0.001 → 0.375 | <0.001 → 0.058 | 8.56 → 7.68 |
+| Historical simulation | 95 % | 172 → 253 (189) | 0.198 → <0.001 | <0.001 → 0.027 | 8.46 → 7.74 |
+| Gaussian copula | 95 % | 157 → 229 (189) | 0.014 → 0.004 | <0.001 → 0.098 | 8.49 → 7.69 |
+| Student-t copula | 95 % | 160 → 238 (189) | 0.026 → <0.001 | <0.001 → 0.115 | 8.47 → 7.70 |
+| Gaussian parametric | 99 % | 52 → 83 (37.8) | 0.028 → <0.001 | <0.001 → 0.002 | 2.91 → 2.55 |
+| Historical simulation | 99 % | 35 → 56 (37.8) | 0.643 → 0.005 | <0.001 → 0.001 | 2.94 → 2.40 |
+| Gaussian copula | 99 % | 29 → 43 (37.8) | 0.134 → 0.406 | <0.001 → <0.001 | 2.96 → 2.37 |
+| Student-t copula | 99 % | 27 → 39 (37.8) | 0.063 → 0.845 | <0.001 → <0.001 | 2.99 → 2.38 |
+
+* **Pinball loss improves for every model at both levels.** The gain is about
+  8–10 % at 95 % and 12–21 % at 99 %. At 95 % the bootstrap intervals of the
+  improvement exclude zero for all models (`results/m4_pinball_comparisons.csv`).
+* **The forecasts react faster** (`fig9`). In the COVID-19 crash (24 days),
+  99 % exceedances fall from 8 to 5 for historical simulation and both copulas.
+* **Clustering is reduced but not removed.** At 95 % the independence test is
+  no longer rejected at 5 % for three models. At 99 % it is still rejected for
+  all four.
+* **Unconditional coverage moves in both directions.** Because k_t < 1 on most
+  calm days, exceedance counts rise. HS and Gaussian parametric become too
+  aggressive (Kupiec rejects at 99 %). The two copulas move close to nominal at
+  99 % (43 and 39 vs 37.8).
+
+### Student-t vs Gaussian copula with the overlay (secondary)
+
+| analysis | level | t − Gaussian, mean ×10⁻⁴ | 95 % CI | p |
+|---|---|---:|---|---:|
+| **Milestone 3, no overlay (primary)** | 99 % | +0.027 | [+0.011, +0.040] | 0.002 |
+| EWMA overlay | 99 % | +0.002 | [−0.014, +0.015] | 0.80 |
+| Milestone 3, no overlay | 95 % | −0.018 | [−0.031, −0.004] | 0.009 |
+| EWMA overlay | 95 % | +0.009 | [−0.001, +0.020] | 0.11 |
+
+* **With the overlay, the two copulas are statistically indistinguishable at
+  both levels.** The small Milestone 3 disadvantage of the t-copula at 99 %
+  does not persist.
+* **No advantage for the t-copula appears either.** The primary result stays
+  as it is: the out-of-sample evidence does not support H2.
+
+### Limitations of this check
+
+1. **The copulas are still fitted to unfiltered returns.** The common overlay
+   rescales the *output* forecasts only. Volatility clustering is still present
+   in the calibration data, so marginals, R and ν are unchanged.
+2. **It cannot identify structural tail dependence.** It does not separate
+   genuine joint tail dependence from volatility mixing. Only refitting the
+   copulas to devolatilised (e.g. asset-level GARCH) residuals could do that,
+   and that was not done.
+3. **It is a zero-conditional-mean approximation.** The whole VaR, including
+   any mean component, is multiplied by k_t. One portfolio-level scale is
+   imposed on all assets.
+4. **There is a level mismatch.** EWMA is zero-mean, while the window sd is
+   mean-adjusted (ddof = 1), as specified. The effect is negligible but
+   present.
+5. **This was one predetermined λ and one filter**, with no search over
+   alternatives. The results should not be read as an optimised volatility
+   model.
+
+**Anomalies noted.**
+
+* In the 2011 period, 99 % exceedances *rise* from 0 to 2 for the copulas and
+  HS. k_t was about 0.5 just before the shock and lagged behind it.
+* For a few per-model 99 % improvements, the percentile CI excludes zero while
+  the centred-bootstrap p-value is 0.06–0.10. The two statistics are built
+  differently, and the score differences are strongly skewed (a few crash days
+  dominate). Both are reported, and neither is used as a primary test.
+
 ## Repository layout
 
 ```
@@ -467,11 +575,13 @@ src/backtest.py            walk-forward forecasts, leakage checks, Kupiec/Christ
 src/copula.py              empirical marginals, Kendall→R, Gaussian/t copulas, ν fit, simulation
 src/copula_backtest.py     walk-forward copula forecasts, per-window seeds, fit diagnostics
 src/scoring.py             pinball loss, moving-block bootstrap
+src/ewma.py                Milestone 4 EWMA volatility overlay (portfolio level)
 src/eda.py                 descriptive statistics, tail quantiles, joint-tail diagnostic
 src/plots.py               figures
 src/run_milestone1.py      Milestone 1 reproduction script
 src/run_milestone2.py      Milestone 2: copula fit + VaR/ES on the first window
 src/run_milestone3.py      Milestone 3: out-of-sample comparison of all four models
+src/run_milestone4.py      Milestone 4: EWMA overlay robustness check
 notebooks/                 analysis notebook (percent format)
 tests/                     pytest suite
 results/                   generated tables (CSV/JSON)

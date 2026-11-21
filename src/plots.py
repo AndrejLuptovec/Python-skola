@@ -352,3 +352,43 @@ def fig_m3_diagnostics(diag: pd.DataFrame, path):
     fig.tight_layout()
     fig.savefig(path)
     plt.close(fig)
+
+
+def fig_m4_overlay(fc, adj, sc, loss, path, zoom=("2020-01-15", "2020-06-30")):
+    """Do EWMA-adjusted forecasts react faster in high-volatility periods?"""
+    loss = loss.reindex(fc.index)
+    fig, axes = plt.subplots(2, 1, figsize=(12, 7.4), gridspec_kw={"height_ratios": [1, 1.2]})
+    ax = axes[0]
+    _shade_stress(ax, sc.index[0], sc.index[-1])
+    ax.plot(sc.index, sc["scale"], color=C["blue"], lw=1.0, label="Scaling factor k_t = σ_EWMA,t / σ_window")
+    ax.axhline(1, color=C["axis"], lw=0.8)
+    ax.set_yscale("log")
+    ax.yaxis.set_major_locator(matplotlib.ticker.FixedLocator([0.25, 0.5, 1, 2, 4]))
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:g}"))
+    ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax.set_ylabel("k_t (log scale)")
+    ax.set_title(f"A. Common EWMA scaling factor (λ = 0.94), applied to every model  [{OOS}]")
+    ax.legend(loc="upper left")
+
+    ax = axes[1]
+    lo, hi = pd.Timestamp(zoom[0]), pd.Timestamp(zoom[1])
+    sl = slice(lo, hi)
+    _shade_stress(ax, lo, hi)
+    ax.plot(loss.loc[sl].index, loss.loc[sl], color=C["muted"], lw=1.0, label="Realised loss")
+    for m, frame, ls, tag in (("tcop", fc, (0, (4, 2)), "original"), ("tcop", adj, "-", "EWMA-adjusted"),
+                              ("gcop", adj, "-", "EWMA-adjusted")):
+        v = frame.loc[sl, f"{m}_var_99"]
+        hits = int((loss.loc[sl] > v).sum())
+        name, c, _ = M3_STYLE[m]
+        ax.plot(v.index, v, color=c, ls=ls, lw=1.5,
+                drawstyle="steps-post" if tag == "original" else "default",
+                label=f"{name} 99 % VaR, {tag} ({hits} exceedances in panel)")
+    ax.yaxis.set_major_formatter(PCT)
+    ax.set_ylabel("Daily portfolio loss")
+    ax.set_title(f"B. Zoom: COVID-19 crash, 99 % VaR with and without overlay  [{OOS}]")
+    ax.set_ylim(-0.065, 0.13)
+    ax.yaxis.set_major_locator(matplotlib.ticker.MultipleLocator(0.02))
+    ax.legend(loc="upper left", ncol=2)
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)

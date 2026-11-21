@@ -1,0 +1,25 @@
+sample,period,n_days,level,model,expected,exceedances_M3,exceedances_EWMA,mean_scale
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Gaussian parametric,2.55,5,7,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Gaussian parametric,0.51,1,4,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Historical simulation,2.55,5,8,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Historical simulation,0.51,0,2,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Gaussian copula,2.55,5,8,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Gaussian copula,0.51,0,2,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Student-t copula,2.55,5,8,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Student-t copula,0.51,0,2,0.878613
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Gaussian parametric,1.2,8,8,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Gaussian parametric,0.24,8,7,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Historical simulation,1.2,8,8,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Historical simulation,0.24,8,5,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Gaussian copula,1.2,8,8,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Gaussian copula,0.24,8,5,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Student-t copula,1.2,8,8,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Student-t copula,0.24,8,5,2.4727
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.95,Gaussian parametric,9.8,26,18,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.99,Gaussian parametric,1.96,7,6,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.95,Historical simulation,9.8,31,28,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.99,Historical simulation,1.96,4,4,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.95,Gaussian copula,9.8,30,23,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.99,Gaussian copula,1.96,3,2,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.95,Student-t copula,9.8,30,25,1.18214
+"out-of-sample, EWMA-overlay robustness check (secondary)",2022 rate shock (2022-01-03..2022-10-12),196,0.99,Student-t copula,1.96,3,2,1.18214
