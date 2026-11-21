@@ -58,3 +58,10 @@ STRESS_PERIODS: tuple[tuple[str, str, str], ...] = (
     ("COVID-19 crash", "2020-02-19", "2020-03-23"),
     ("2022 rate shock", "2022-01-03", "2022-10-12"),
 )
+
+# --- Milestone 2: copula simulation (fixed before looking at any results) ----
+COPULA_SEED = 20261121             # main simulation seed
+COPULA_N_SIM = 200_000             # scenarios per model for reported VaR/ES
+COPULA_STABILITY_REPS = 20         # independent replications for MC error
+COPULA_STABILITY_N = 100_000       # scenarios per replication
+COPULA_NU_BOUNDS = (2.0, 100.0)    # constrained pseudo-likelihood range for nu
