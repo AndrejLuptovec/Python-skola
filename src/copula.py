@@ -214,6 +214,7 @@ class DfFit:
     seconds: float
     profile_nu: np.ndarray = field(repr=False, default=None)
     profile_loglik: np.ndarray = field(repr=False, default=None)
+    failure_reason: str = ""
 
     @property
     def usable(self) -> bool:
@@ -245,7 +246,15 @@ def fit_t_df(u, R, bounds=(NU_MIN, NU_MAX), boundary_rtol: float = 0.01,
                                    options={"xatol": 1e-6, "maxiter": 500})
     ll_g = float(gaussian_copula_logpdf(u, R).sum())
     gbest = int(np.nanargmax(prof))
-    ok = bool(res.success) and np.isfinite(res.fun) and (-res.fun >= prof[gbest] - 1e-6)
+    reason = ""
+    if not res.success:
+        reason = f"optimizer reported failure: {res.message}"
+    elif not np.isfinite(res.fun):
+        reason = "non-finite objective at optimum"
+    elif -res.fun < prof[gbest] - 1e-6:
+        reason = (f"optimum (nu={float(res.x):.4f}, loglik={-res.fun:.4f}) is worse than grid "
+                  f"point nu={grid[gbest]:.4f} (loglik={prof[gbest]:.4f}): local optimum")
+    ok = reason == ""
     nu = float(res.x)
     if not ok:
         status, nu = "failed", float("nan")
@@ -261,6 +270,7 @@ def fit_t_df(u, R, bounds=(NU_MIN, NU_MAX), boundary_rtol: float = 0.01,
         optimizer_message=str(res.message), n_function_evals=int(res.nfev),
         grid_best_nu=float(grid[gbest]), grid_best_loglik=float(prof[gbest]),
         seconds=time.perf_counter() - t0, profile_nu=grid, profile_loglik=prof,
+        failure_reason=reason,
     )
 
 
@@ -317,7 +327,7 @@ class CopulaModel:
     def simulate_returns(self, kind: str, n: int, seed: int) -> tuple[np.ndarray, np.ndarray]:
         if kind == "t" and not self.df_fit.usable:
             raise CopulaFitError(
-                f"Student-t fit failed ({self.df_fit.optimizer_message}); refusing to simulate."
+                f"Student-t fit failed ({self.df_fit.failure_reason}); refusing to simulate."
             )
         nu = self.df_fit.nu if kind == "t" else None
         u = simulate_uniforms(kind, self.corr.R, n, seed, nu)

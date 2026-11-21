@@ -65,3 +65,14 @@ COPULA_N_SIM = 200_000             # scenarios per model for reported VaR/ES
 COPULA_STABILITY_REPS = 20         # independent replications for MC error
 COPULA_STABILITY_N = 100_000       # scenarios per replication
 COPULA_NU_BOUNDS = (2.0, 100.0)    # constrained pseudo-likelihood range for nu
+
+# --- Milestone 3: out-of-sample copula backtest (fixed before running it) ----
+# Window k (0-based refit index) uses seed SeedSequence([COPULA_SEED, k]) for
+# BOTH copulas (common random numbers within a window, distinct across windows).
+BOOTSTRAP_BLOCK_LENGTH = 20        # moving-block bootstrap, trading days
+BOOTSTRAP_RESAMPLES = 2000
+BOOTSTRAP_SEED = 20261122
+PRIMARY_LEVEL = 0.99               # primary comparison: 99 % VaR pinball loss, t vs Gaussian copula
+# Monte Carlo seed-sensitivity check: the full copula walk-forward is re-run
+# with this alternative base seed; the primary result is NOT taken from it.
+SEED_SENSITIVITY_BASE = 20261121 + 1_000_000

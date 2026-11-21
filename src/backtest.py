@@ -42,6 +42,14 @@ def refit_positions(index: pd.DatetimeIndex, window: int, frequency: str) -> np.
     raise ValueError(f"Unknown refit frequency {frequency!r}")
 
 
+MODEL_NAMES = {
+    "gauss": "Gaussian parametric",
+    "hs": "Historical simulation",
+    "gcop": "Gaussian copula",
+    "tcop": "Student-t copula",
+}
+
+
 def _label(level: float) -> str:
     return f"{round(level * 100):d}"
 
@@ -144,7 +152,7 @@ def evaluate(
     An exceedance (hit) is L_t > VaR_t. The ES comparison is descriptive only;
     it is not a formal ES backtest.
     """
-    names = {"gauss": "Gaussian parametric", "hs": "Historical simulation"}
+    names = MODEL_NAMES
     loss = realised_losses.reindex(forecasts.index)
     if loss.isna().any():
         raise ValueError("Realised losses missing for some forecast dates.")
@@ -190,12 +198,13 @@ def evaluate(
 
 
 def exceedances_by_year(
-    forecasts: pd.DataFrame, realised_losses: pd.Series, levels=config.VAR_LEVELS
+    forecasts: pd.DataFrame, realised_losses: pd.Series, levels=config.VAR_LEVELS,
+    models=("gauss", "hs"),
 ) -> pd.DataFrame:
     """Exceedance counts per calendar year - shows clustering in stress regimes."""
     loss = realised_losses.reindex(forecasts.index)
     out = {"n_days": loss.groupby(loss.index.year).size()}
-    for m in ("gauss", "hs"):
+    for m in models:
         for a in levels:
             k = _label(a)
             hits = (loss > forecasts[f"{m}_var_{k}"]).astype(int)
