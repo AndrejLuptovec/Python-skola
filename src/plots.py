@@ -266,3 +266,89 @@ def fig_copula_initial_window(u_obs, sims, window_losses, dff, rho_spy_eem, path
     fig.tight_layout()
     fig.savefig(path)
     plt.close(fig)
+
+
+# ----------------------------------------------------------------------------
+# Milestone 3 (all OUT-OF-SAMPLE)
+# ----------------------------------------------------------------------------
+M3_STYLE = {
+    "gauss": ("Gaussian parametric", C["yellow"], (0, (4, 2))),
+    "hs": ("Historical simulation", C["blue"], "-"),
+    "gcop": ("Gaussian copula", C["orange"], "-"),
+    "tcop": ("Student-t copula", C["aqua"], "-"),
+}
+OOS = "OUT-OF-SAMPLE"
+
+
+def fig_m3_var_paths(fc: pd.DataFrame, loss: pd.Series, path,
+                     zoom=("2020-01-15", "2020-05-29")):
+    """How do the four 99 % VaR forecasts track realised losses?"""
+    loss = loss.reindex(fc.index)
+    fig, axes = plt.subplots(2, 1, figsize=(12, 8), gridspec_kw={"height_ratios": [1.25, 1]})
+    for ax, (lo, hi), title in (
+        (axes[0], (fc.index[0], fc.index[-1]), "A. 99 % one-day VaR forecasts, 2010-12-21 … 2025-12-31"),
+        (axes[1], (pd.Timestamp(zoom[0]), pd.Timestamp(zoom[1])), "B. Zoom: COVID-19 crash"),
+    ):
+        sl = slice(lo, hi)
+        _shade_stress(ax, lo, hi)
+        ax.plot(loss.loc[sl].index, loss.loc[sl], color=C["muted"], lw=0.5 if ax is axes[0] else 1.0,
+                label="Realised loss")
+        for m, (name, c, ls) in M3_STYLE.items():
+            v = fc.loc[sl, f"{m}_var_99"]
+            hits = int((loss.loc[sl] > v).sum())
+            ax.plot(v.index, v, color=c, ls=ls, lw=1.4, drawstyle="steps-post",
+                    label=f"{name} ({hits} exceedances in panel)")
+        ax.yaxis.set_major_formatter(PCT)
+        ax.set_ylabel("Daily portfolio loss")
+        ax.set_title(f"{title}  [{OOS}]")
+        ax.legend(loc="upper left" if ax is axes[1] else "upper right", ncol=2)
+    axes[0].set_ylim(-0.02, 0.075)
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+
+
+def fig_m3_cumulative_score_diff(scores: pd.DataFrame, path):
+    """Where in time does the Student-t vs Gaussian copula score difference arise?"""
+    fig, axes = plt.subplots(2, 1, figsize=(12, 6.6), sharex=True)
+    for ax, lab in zip(axes, ("99", "95")):
+        _shade_stress(ax, scores.index[0], scores.index[-1])
+        d1 = (scores[f"tcop_{lab}"] - scores[f"gcop_{lab}"]).cumsum() * 1e4
+        d2 = (scores[f"tcop_{lab}"] - scores[f"hs_{lab}"]).cumsum() * 1e4
+        ax.plot(d1.index, d1, color=C["aqua"], lw=1.6, label="Student-t copula − Gaussian copula")
+        ax.plot(d2.index, d2, color=C["blue"], lw=1.1, ls=(0, (4, 2)),
+                label="Student-t copula − historical simulation")
+        ax.axhline(0, color=C["axis"], lw=0.8)
+        ax.set_ylabel("Cumulative score difference (×10⁻⁴)")
+        ax.set_title(f"{lab} % VaR pinball loss, cumulative paired difference "
+                     f"(below 0 favours Student-t)  [{OOS}]")
+        ax.legend(loc="upper left")
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+
+
+def fig_m3_diagnostics(diag: pd.DataFrame, path):
+    """Are the window-by-window copula fits stable and well-behaved?"""
+    fig, axes = plt.subplots(2, 1, figsize=(12, 5.8), sharex=True)
+    ax = axes[0]
+    _shade_stress(ax, diag["fit_date"].iloc[0], diag["fit_date"].iloc[-1])
+    ax.plot(diag["fit_date"], diag["nu"], color=C["aqua"], lw=1.5, drawstyle="steps-post",
+            label="Estimated ν (fixed until next refit)")
+    bad = diag["nu_status"] != "converged"
+    if bad.any():
+        ax.scatter(diag.loc[bad, "fit_date"], diag.loc[bad, "nu"], color=C["orange"], s=24,
+                   zorder=3, label="Bound solution")
+    ax.set_ylabel("Degrees of freedom ν")
+    ax.set_title("A. Student-t copula degrees of freedom per calibration window")
+    ax.legend(loc="upper left")
+    ax = axes[1]
+    _shade_stress(ax, diag["fit_date"].iloc[0], diag["fit_date"].iloc[-1], label=False)
+    ax.plot(diag["fit_date"], diag["loglik_t"] - diag["loglik_gaussian"], color=C["blue"],
+            lw=1.5, drawstyle="steps-post", label="Pseudo-log-likelihood gain, t vs Gaussian (in-window)")
+    ax.set_ylabel("Δ pseudo-log-likelihood")
+    ax.set_title("B. In-window fit improvement of the t copula (same R, same marginals)")
+    ax.legend(loc="upper left")
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)

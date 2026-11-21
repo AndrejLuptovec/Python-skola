@@ -8,10 +8,11 @@ specification is in [`PROJECT_SPEC.md`](PROJECT_SPEC.md) (v1.0, unchanged).
 
 * Milestone 1 (data audit, exploratory analysis, Gaussian and HS baselines)
   passed scientific review.
-* **Milestone 2 is complete.** It adds the controlled Gaussian vs Student-t
-  copula implementation, fitted only on the first calibration window. It is
-  waiting for review.
-* The rolling copula backtest (Milestone 3) has not been started.
+* Milestone 2 (controlled Gaussian vs Student-t copula implementation) passed
+  scientific review.
+* **Milestone 3 is complete.** It runs the full out-of-sample walk-forward
+  comparison of all four models. It is waiting for scientific review.
+  Conclusions have not been drafted yet.
 
 ---
 
@@ -23,12 +24,14 @@ pip install -r requirements.txt
 python -m src.fetch_data        # downloads the pinned CSV and verifies its SHA-256
 python -m src.run_milestone1    # Milestone 1 tables/figures (deterministic)
 python -m src.run_milestone2    # Milestone 2 copula fit on the first window (~10 s)
-python -m pytest                # 47 tests: data, formulas, no-leakage, copulas
+python -m src.run_milestone3    # Milestone 3 out-of-sample backtest, 4 models (~4 min)
+python -m pytest                # 60 tests: data, formulas, no-leakage, copulas, scoring
 ```
 
 Run all commands from the repository root. `run_milestone1` has no random
-component. `run_milestone2` uses the fixed seeds in `src/config.py`, so its
-outputs are bit-for-bit reproducible.
+component. `run_milestone2` and `run_milestone3` use the fixed seeds in
+`src/config.py`, so their outputs are bit-for-bit reproducible. The only
+exception is the measured runtimes stored in the JSON metadata.
 The analysis notebook `notebooks/01_milestone1_eda_baselines.py` uses the
 "percent" cell format. It opens as a notebook in VS Code or PyCharm, and it
 also runs as a plain script.
@@ -305,6 +308,152 @@ under test. The tests cover:
    likelihood with R fixed. This is not a joint maximum-likelihood fit, and
    there are no standard errors for ν yet.
 
+## Milestone 3: out-of-sample comparison of four models
+
+> **Every number in this section is OUT-OF-SAMPLE.** These are one-day-ahead
+> forecasts from 2010-12-21 to 2025-12-31 (3,780 days, 181 monthly refits).
+> Each forecast uses only the 1,250 returns strictly before its refit day.
+
+### Protocol (fixed before the run)
+
+* **Same inputs for every model.** All four models use the same forecast
+  dates, refit days, calibration windows, weights and realised-loss series.
+  The run checks this mechanically. The Milestone 1 forecasts are recomputed
+  and must match `results/var_forecasts_gaussian_hs.csv`.
+* **Copula refits.** Both copulas are refitted with the Milestone 2 method
+  (identical empirical marginals and identical Kendall-τ correlation matrix R)
+  and simulate 200,000 scenarios per model. VaR/ES stays fixed until the next
+  refit.
+* **Seeds.** Window k uses seed `SeedSequence([20261121, k])`, which is
+  deterministic and distinct across windows. Within a window, the Gaussian and
+  t copulas share the seed (common random numbers).
+* **Fit policy.**
+  * A failed ν fit stops the run (`CopulaFitError`).
+  * A bound solution is kept and triggers a warning.
+  * No values are substituted and no dates are dropped.
+* **Primary comparison.**
+  * The score is the 99 % VaR **pinball (quantile) loss**
+    `S = (1{L ≤ VaR} − α)(VaR − L)`. Lower is better.
+  * The test statistic is the paired mean difference, Student-t copula minus
+    Gaussian copula.
+  * Uncertainty comes from a moving-block bootstrap (non-circular, block
+    length 20, 2,000 resamples, seed 20261122).
+  * 95 % VaR is the secondary comparison. All other comparisons are
+    exploratory and are not corrected for multiplicity.
+* **Coverage tests.** Kupiec, Christoffersen independence and conditional
+  coverage for all four models. ES is compared descriptively only.
+
+### Copula fits across the 181 windows (`results/m3_copula_window_diagnostics.csv`, `fig8`)
+
+* **Student-t ν.** All 181 fits have status `converged`. There are 0 bound
+  solutions, 0 failures and 0 warnings.
+  * ν ranges from 3.23 to 9.60, with a median of 5.07.
+* **Correlation matrix.** No positive-definiteness correction was needed. The
+  smallest raw eigenvalue across all windows is 0.106.
+* **Clamped draws.** The share of simulated values clamped to the window
+  extremes is at most 0.19 % per asset (expected 0.16 %).
+* **Runtime.**
+  * Fitting takes 0.19 s per window on average (0.27 s at most).
+  * Simulating 200,000 scenarios takes about 0.11 s (Gaussian) and 0.33 s (t).
+  * The full 181-window run takes about 2 minutes.
+* **ν follows volatile episodes.** ν drops when the COVID-19 crash enters the
+  window (2020) and jumps when it leaves (2025, ν ≈ 9.6). The estimated tail
+  dependence is therefore driven largely by which crises the window contains.
+
+### Coverage (`results/m3_backtest_summary_oos.csv`)
+
+There are 3,780 forecasts. Expected exceedances are 189.0 at 95 % and 37.8 at
+99 %.
+
+| model | level | exceedances | rate | Kupiec p | Christoffersen ind. p | cond. coverage p | mean ES on exc. days | mean loss on exc. days |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Gaussian parametric | 95 % | 146 | 3.86 % | 0.001 | <0.001 | <0.001 | 1.39 % | 1.68 % |
+| Historical simulation | 95 % | 172 | 4.55 % | 0.198 | <0.001 | <0.001 | 1.63 % | 1.59 % |
+| Gaussian copula | 95 % | 157 | 4.15 % | 0.014 | <0.001 | <0.001 | 1.65 % | 1.65 % |
+| Student-t copula | 95 % | 160 | 4.23 % | 0.026 | <0.001 | <0.001 | 1.67 % | 1.64 % |
+| Gaussian parametric | 99 % | 52 | 1.38 % | 0.028 | <0.001 | <0.001 | 1.73 % | 2.32 % |
+| Historical simulation | 99 % | 35 | 0.93 % | 0.643 | <0.001 | <0.001 | 2.46 % | 2.61 % |
+| Gaussian copula | 99 % | 29 | 0.77 % | 0.134 | <0.001 | <0.001 | 2.33 % | 2.73 % |
+| Student-t copula | 99 % | 27 | 0.71 % | 0.063 | <0.001 | <0.001 | 2.38 % | 2.78 % |
+
+* **All eight model-level combinations fail the independence test.**
+  Exceedances cluster in 2018, 2020 and 2022
+  (`results/m3_exceedances_by_year_oos.csv`).
+* **Both copulas are conservative at 99 %.** They have fewer exceedances than
+  nominal, but Kupiec does not reject at 5 %.
+* **On 99 % exceedance days, realised losses exceed the predicted ES for both
+  copulas,** by a ratio of about 1.17.
+
+### Pinball loss: primary and secondary comparisons (`results/m3_pinball_comparisons_oos.csv`)
+
+Mean pinball loss ×10⁻⁴ (`results/m3_pinball_mean_oos.csv`):
+
+| level | Gaussian parametric | Historical simulation | Gaussian copula | Student-t copula |
+|---|---:|---:|---:|---:|
+| 99 % | 2.912 | 2.938 | 2.962 | 2.989 |
+| 95 % | 8.564 | 8.459 | 8.487 | 8.468 |
+
+| role | level | comparison | mean diff ×10⁻⁴ | 95 % block-bootstrap CI | relative | p |
+|---|---|---|---:|---|---:|---:|
+| **primary** | 99 % | Student-t − Gaussian copula | **+0.027** | [+0.011, +0.040] | +0.92 % | 0.002 |
+| secondary | 95 % | Student-t − Gaussian copula | −0.018 | [−0.031, −0.004] | −0.22 % | 0.009 |
+| exploratory | 99 % | Student-t copula − historical simulation | +0.051 | [−0.017, +0.109] | +1.75 % | 0.105 |
+| exploratory | 99 % | Student-t copula − Gaussian parametric | +0.077 | [−0.125, +0.233] | +2.66 % | 0.413 |
+| exploratory | 95 % | Student-t copula − Gaussian parametric | −0.096 | [−0.162, −0.019] | −1.12 % | 0.011 |
+
+* **Primary result.** The 99 % VaR pinball loss of the Student-t copula is
+  *higher*, i.e. worse, than that of the Gaussian copula. The difference is
+  small (+0.9 %), and its bootstrap interval excludes zero. The out-of-sample
+  evidence therefore does **not** support the claim that the Student-t copula
+  forecasts 99 % VaR better.
+* **Why.** The t-copula's 99 % VaR is higher on 98.9 % of days, by 0.05 pp on
+  average. This removes only 2 exceedances (27 vs 29). The extra buffer is
+  therefore paid for on almost every calm day. The cumulative score difference
+  in `fig7` rises steadily on calm days and drops only on large-loss days
+  (February 2018, March 2020, April 2025).
+* **Secondary result.** At 95 % the ranking reverses: the t-copula VaR is
+  *lower* on 99.4 % of days, and its score is slightly better (−0.2 %).
+* **Practical size.** Both effects are far smaller than the differences
+  between periods.
+
+### Stress periods (`results/m3_stress_period_performance_oos.csv`)
+
+* **Coverage of stress periods.** The Global Financial Crisis lies entirely in
+  the first calibration window, so it is not part of the out-of-sample
+  evaluation. The 2011, COVID-19 and 2022 periods are covered.
+* **COVID-19 (24 days).** All four models have 8 exceedances of 99 % VaR,
+  against an expected 0.24.
+* **All listed stress periods together.** The Student-t copula scores slightly
+  better than the Gaussian copula (9.54 vs 9.61 ×10⁻⁴).
+* **Outside the stress periods.** It scores slightly worse (2.48 vs 2.45).
+
+### Monte Carlo seed sensitivity (`results/m3_seed_sensitivity_oos.csv`)
+
+The full copula walk-forward was re-run with base seed 21261121. ν is
+identical, because the fit does not depend on the seed.
+
+* The primary difference is +0.026 ×10⁻⁴ (CI [+0.006, +0.042]).
+* The secondary difference is −0.020 ×10⁻⁴.
+
+Both conclusions are unchanged. The bootstrap treats forecasts as fixed and
+does not include Monte Carlo error. This check shows that the Monte Carlo
+error does not drive the result.
+
+### Open points for scientific review (Milestone 3)
+
+1. **Volatility clustering dominates.** Every model fails the independence
+   test, and all models fail together in COVID-19. The dependence structure
+   cannot fix a static, unconditional volatility level. An EWMA/GARCH filter
+   is the natural robustness extension but has not been started.
+2. **The effect size is tiny relative to the score variance between periods.**
+   The primary difference is statistically clear (the comparison is paired
+   with common random numbers) but economically small. The interpretation
+   should weigh both.
+3. **Pinball loss evaluates only the VaR quantile.** ES is compared
+   descriptively. A joint VaR/ES score (e.g. FZ0, Fissler & Ziegel 2016) would
+   be the formal extension.
+4. **Exploratory comparisons** are not corrected for multiple testing.
+
 ## Repository layout
 
 ```
@@ -316,10 +465,13 @@ src/returns.py             simple / portfolio returns, losses
 src/risk.py                Gaussian and historical-simulation VaR/ES
 src/backtest.py            walk-forward forecasts, leakage checks, Kupiec/Christoffersen
 src/copula.py              empirical marginals, Kendall→R, Gaussian/t copulas, ν fit, simulation
+src/copula_backtest.py     walk-forward copula forecasts, per-window seeds, fit diagnostics
+src/scoring.py             pinball loss, moving-block bootstrap
 src/eda.py                 descriptive statistics, tail quantiles, joint-tail diagnostic
 src/plots.py               figures
 src/run_milestone1.py      Milestone 1 reproduction script
 src/run_milestone2.py      Milestone 2: copula fit + VaR/ES on the first window
+src/run_milestone3.py      Milestone 3: out-of-sample comparison of all four models
 notebooks/                 analysis notebook (percent format)
 tests/                     pytest suite
 results/                   generated tables (CSV/JSON)

@@ -1,0 +1,9 @@
+model,level,mean_pinball,mean_pinball_x1e4
+Gaussian parametric,0.95,0.00085643291,8.5643291
+Historical simulation,0.95,0.00084592286,8.4592286
+Gaussian copula,0.95,0.00084865585,8.4865585
+Student-t copula,0.95,0.00084682753,8.4682753
+Gaussian parametric,0.99,0.00029118206,2.9118206
+Historical simulation,0.99,0.0002937803,2.937803
+Gaussian copula,0.99,0.00029618233,2.9618233
+Student-t copula,0.99,0.00029891747,2.9891747

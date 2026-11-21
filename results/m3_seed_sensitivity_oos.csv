@@ -1,0 +1,5 @@
+run,base_seed,level,tcop_exceedances,gcop_exceedances,mean_diff_t_minus_g,ci95_low,ci95_high,boot_p_two_sided
+main,20261121,0.95,160,157,-1.82832e-06,-3.11347e-06,-4.20815e-07,0.009
+main,20261121,0.99,27,29,2.73514e-06,1.09935e-06,4.03544e-06,0.0015
+alternative,21261121,0.95,161,158,-1.99039e-06,-3.23348e-06,-6.15092e-07,0.005
+alternative,21261121,0.99,27,28,2.62276e-06,6.0314e-07,4.21112e-06,0.0085

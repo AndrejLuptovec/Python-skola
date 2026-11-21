@@ -1,0 +1,9 @@
+sample,role,level,model_A,model_B,mean_score_A,mean_score_B,mean_diff_A_minus_B,relative_diff,boot_se,ci95_low,ci95_high,boot_p_two_sided,share_days_A_better,share_days_equal,block_length,n_resamples,n
+out-of-sample,primary,0.99,Student-t copula,Gaussian copula,0.000298917,0.000296182,2.73514e-06,0.00923465,7.63385e-07,1.09935e-06,4.03544e-06,0.0015,0.018254,0,20,2000,3780
+out-of-sample,secondary,0.95,Student-t copula,Gaussian copula,0.000846828,0.000848656,-1.82832e-06,-0.00215437,6.8963e-07,-3.11347e-06,-4.20815e-07,0.009,0.955556,0,20,2000,3780
+out-of-sample,exploratory,0.99,Student-t copula,Historical simulation,0.000298917,0.00029378,5.13717e-06,0.0174864,3.22628e-06,-1.64572e-06,1.08507e-05,0.105,0.00925926,0,20,2000,3780
+out-of-sample,exploratory,0.95,Student-t copula,Historical simulation,0.000846828,0.000845923,9.04671e-07,0.00106945,2.24082e-06,-3.802e-06,5.01069e-06,0.6965,0.318519,0,20,2000,3780
+out-of-sample,exploratory,0.99,Student-t copula,Gaussian parametric,0.000298917,0.000291182,7.73542e-06,0.0265656,9.22768e-06,-1.25425e-05,2.32544e-05,0.4125,0.0134921,0,20,2000,3780
+out-of-sample,exploratory,0.95,Student-t copula,Gaussian parametric,0.000846828,0.000856433,-9.60538e-06,-0.0112156,3.61454e-06,-1.61603e-05,-1.92049e-06,0.0105,0.778836,0,20,2000,3780
+out-of-sample,exploratory,0.99,Gaussian copula,Historical simulation,0.000296182,0.00029378,2.40203e-06,0.00817628,2.54698e-06,-3.08718e-06,6.9536e-06,0.3535,0.0259259,0,20,2000,3780
+out-of-sample,exploratory,0.95,Gaussian copula,Historical simulation,0.000848656,0.000845923,2.73299e-06,0.00323078,2.75066e-06,-3.17448e-06,7.65934e-06,0.3115,0.219577,0,20,2000,3780

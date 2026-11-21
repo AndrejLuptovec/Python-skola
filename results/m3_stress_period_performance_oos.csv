@@ -1,0 +1,49 @@
+sample,segment,n_days,level,model,expected_exceedances,exceedances,exceedance_rate,mean_pinball_x1e4,mean_VaR,mean_ES,mean_loss_on_exceedances
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Gaussian parametric,2.55,5,0.0980392,13.5471,0.0182305,0.0229799,0.0234212
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Historical simulation,2.55,5,0.0980392,14.4086,0.0164264,0.0261877,0.0234212
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Gaussian copula,2.55,5,0.0980392,14.121,0.0170709,0.0270563,0.0234212
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.95,Student-t copula,2.55,5,0.0980392,14.1714,0.0169789,0.0276454,0.0234212
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Gaussian parametric,0.51,1,0.0196078,3.23477,0.0259764,0.029828,0.0297703
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Historical simulation,0.51,0,0,3.12305,0.0325729,0.0435977,
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Gaussian copula,0.51,0,0,3.17582,0.0331007,0.0441845,
+out-of-sample,US downgrade / euro crisis (2011-07-22..2011-10-03),51,0.99,Student-t copula,0.51,0,0,3.28251,0.0341676,0.0464132,
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Gaussian parametric,1.2,8,0.333333,98.6646,0.00856645,0.0108217,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Historical simulation,1.2,8,0.333333,97.9292,0.00882376,0.0123739,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Gaussian copula,1.2,8,0.333333,97.6749,0.00891012,0.0129366,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.95,Student-t copula,1.2,8,0.333333,97.7542,0.00888829,0.013124,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Gaussian parametric,0.24,8,0.333333,86.5587,0.0122445,0.0140734,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Historical simulation,0.24,8,0.333333,78.9779,0.0146275,0.0188235,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Gaussian copula,0.24,8,0.333333,75.9989,0.0155235,0.0191663,0.0380819
+out-of-sample,COVID-19 crash (2020-02-19..2020-03-23),24,0.99,Student-t copula,0.24,8,0.333333,75.1699,0.0157801,0.0198548,0.0380819
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.95,Gaussian parametric,9.8,26,0.132653,11.2749,0.0119553,0.0150882,0.0163972
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.95,Historical simulation,9.8,31,0.158163,12.8319,0.0105111,0.0180511,0.015605
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.95,Gaussian copula,9.8,30,0.153061,12.0683,0.0111897,0.0181809,0.0157916
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.95,Student-t copula,9.8,30,0.153061,12.2304,0.0110403,0.0184346,0.0157916
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.99,Gaussian parametric,1.96,7,0.0357143,3.64578,0.0170649,0.0196056,0.0229966
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.99,Historical simulation,1.96,4,0.0204082,3.28353,0.0198088,0.0338451,0.0267476
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.99,Gaussian copula,1.96,3,0.0153061,3.15472,0.0211505,0.032525,0.0290938
+out-of-sample,2022 rate shock (2022-01-03..2022-10-12),196,0.99,Student-t copula,1.96,3,0.0153061,3.12614,0.0214564,0.0336759,0.0290938
+out-of-sample,All listed stress periods,271,0.95,Gaussian parametric,13.55,39,0.143911,19.4418,0.0128361,0.0161955,0.0217459
+out-of-sample,All listed stress periods,271,0.95,Historical simulation,13.55,44,0.162362,20.6649,0.0114749,0.0190796,0.0205799
+out-of-sample,All listed stress periods,271,0.95,Gaussian copula,13.55,43,0.158672,20.036,0.0120946,0.0193868,0.0208258
+out-of-sample,All listed stress periods,271,0.95,Student-t copula,13.55,43,0.158672,20.1698,0.0119673,0.0196977,0.0208258
+out-of-sample,All listed stress periods,271,0.99,Gaussian parametric,2.71,16,0.0590406,10.9113,0.0183151,0.0210394,0.0309626
+out-of-sample,All listed stress periods,271,0.99,Historical simulation,2.71,12,0.0442804,9.95689,0.021752,0.0343502,0.0343038
+out-of-sample,All listed stress periods,271,0.99,Gaussian copula,2.71,11,0.0405904,9.60983,0.0229011,0.0335362,0.0356306
+out-of-sample,All listed stress periods,271,0.99,Student-t copula,2.71,11,0.0405904,9.53583,0.0233458,0.034849,0.0356306
+out-of-sample,Outside listed stress periods,3509,0.95,Gaussian parametric,175.45,107,0.030493,7.72426,0.0122786,0.0154881,0.0149376
+out-of-sample,Outside listed stress periods,3509,0.95,Historical simulation,175.45,128,0.0364776,7.51658,0.0114259,0.0176571,0.0143356
+out-of-sample,Outside listed stress periods,3509,0.95,Gaussian copula,175.45,114,0.0324879,7.59459,0.0118185,0.0180541,0.014816
+out-of-sample,Outside listed stress periods,3509,0.95,Student-t copula,175.45,117,0.0333428,7.56457,0.0116641,0.0183772,0.0147086
+out-of-sample,Outside listed stress periods,3509,0.99,Gaussian parametric,35.09,36,0.0102593,2.29402,0.017513,0.0201158,0.0197471
+out-of-sample,Outside listed stress periods,3509,0.99,Historical simulation,35.09,23,0.00655457,2.39572,0.0203154,0.0295538,0.0217989
+out-of-sample,Outside listed stress periods,3509,0.99,Gaussian copula,35.09,18,0.00512967,2.4484,0.021433,0.0294237,0.0221916
+out-of-sample,Outside listed stress periods,3509,0.99,Student-t copula,35.09,16,0.0045597,2.48358,0.0219418,0.0308332,0.022373
+out-of-sample,Full out-of-sample period,3780,0.95,Gaussian parametric,189,146,0.0386243,8.56433,0.0123186,0.0155388,0.0167562
+out-of-sample,Full out-of-sample period,3780,0.95,Historical simulation,189,172,0.0455026,8.45923,0.0114294,0.0177591,0.015933
+out-of-sample,Full out-of-sample period,3780,0.95,Gaussian copula,189,157,0.0415344,8.48656,0.0118383,0.0181496,0.016462
+out-of-sample,Full out-of-sample period,3780,0.95,Student-t copula,189,160,0.042328,8.46828,0.0116859,0.0184719,0.0163526
+out-of-sample,Full out-of-sample period,3780,0.99,Gaussian parametric,37.8,52,0.0137566,2.91182,0.0175705,0.020182,0.023198
+out-of-sample,Full out-of-sample period,3780,0.99,Historical simulation,37.8,35,0.00925926,2.9378,0.0204184,0.0298977,0.0260863
+out-of-sample,Full out-of-sample period,3780,0.99,Gaussian copula,37.8,29,0.00767196,2.96182,0.0215383,0.0297185,0.0272891
+out-of-sample,Full out-of-sample period,3780,0.99,Student-t copula,37.8,27,0.00714286,2.98917,0.0220425,0.0311211,0.0277742

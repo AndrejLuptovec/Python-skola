@@ -1,0 +1,64 @@
+{
+  "sample": "OUT-OF-SAMPLE, one-day-ahead",
+  "first_forecast_date": "2010-12-21",
+  "last_forecast_date": "2025-12-31",
+  "n_forecasts": 3780,
+  "n_windows": 181,
+  "n_scenarios_per_model_per_window": 200000,
+  "seed_rule": "SeedSequence([COPULA_SEED, window_index]).generate_state(1)[0], shared by both copulas",
+  "copula_seed_base": 20261121,
+  "seeds_unique": true,
+  "nu_status_counts": {
+    "converged": 181
+  },
+  "bound_warnings": [],
+  "nu_summary": {
+    "count": 181.0,
+    "mean": 5.1920467820770835,
+    "std": 1.2293060792306656,
+    "min": 3.2302525378599007,
+    "25%": 4.440666133387835,
+    "50%": 5.065853854376491,
+    "75%": 5.735819545011906,
+    "max": 9.597172082242414
+  },
+  "pd_corrections": 0,
+  "min_eigenvalue_raw_min": 0.10618281488663452,
+  "max_clamped_share": {
+    "gcop": 0.00184,
+    "tcop": 0.001915
+  },
+  "runtime_seconds": {
+    "total_copula_walk_forward": 116.99256390799997,
+    "fit_mean": 0.19734729755801075,
+    "fit_max": 0.2828784270000142,
+    "sim_gaussian_mean": 0.11124960318232005,
+    "sim_t_mean": 0.3273915260607745
+  },
+  "primary_comparison": "99% VaR pinball loss, Student-t copula minus Gaussian copula",
+  "bootstrap": {
+    "type": "moving block, non-circular",
+    "block_length": 20,
+    "resamples": 2000,
+    "seed": 20261122
+  },
+  "stress_periods_in_sample": [
+    "Global Financial Crisis"
+  ],
+  "milestone1_forecasts_reproduced": true,
+  "seed_sensitivity": {
+    "alternative_base_seed": 21261121,
+    "nu_identical": true,
+    "max_abs_change_per_column": {
+      "gcop_var_95": 0.0002656584479349411,
+      "gcop_es_95": 0.0005320754414843629,
+      "gcop_var_99": 0.000934794210073843,
+      "gcop_es_99": 0.001528799554235176,
+      "tcop_var_95": 0.0002755459433959259,
+      "tcop_es_95": 0.00043299778800591493,
+      "tcop_var_99": 0.0007810896913646934,
+      "tcop_es_99": 0.0011578166321926306
+    },
+    "seconds": 113.77661363299995
+  }
+}
