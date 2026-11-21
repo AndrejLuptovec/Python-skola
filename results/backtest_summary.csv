@@ -1,0 +1,5 @@
+model,level,n_forecasts,expected_exceedances,observed_exceedances,observed_rate,nominal_rate,kupiec_LR,kupiec_p,christoffersen_ind_LR,christoffersen_ind_p,conditional_coverage_LR,conditional_coverage_p,consecutive_exceedances_n11,mean_predicted_VaR,mean_predicted_ES,mean_loss_on_exceedance_days,mean_predicted_ES_on_exceedance_days,ratio_realised_to_predicted_ES_on_exceedances,max_loss_on_exceedance_days
+Gaussian parametric,0.95,3780,189,146,0.0386243,0.05,11.1359,0.000846746,19.3419,1.09283e-05,30.4777,2.40904e-07,18,0.0123186,0.0155388,0.0167562,0.0138927,1.20612,0.0650306
+Gaussian parametric,0.99,3780,37.8,52,0.0137566,0.01,4.82315,0.02808,20.978,4.64583e-06,25.8012,2.49659e-06,7,0.0175705,0.020182,0.023198,0.0173191,1.33944,0.0650306
+Historical simulation,0.95,3780,189,172,0.0455026,0.05,1.65748,0.197944,24.8023,6.35218e-07,26.4598,1.79611e-06,24,0.0114294,0.0177591,0.015933,0.0163068,0.977074,0.0650306
+Historical simulation,0.99,3780,37.8,35,0.00925926,0.01,0.214822,0.643014,19.3356,1.09641e-05,19.5505,5.68423e-05,5,0.0204184,0.0298977,0.0260863,0.0246454,1.05847,0.0650306

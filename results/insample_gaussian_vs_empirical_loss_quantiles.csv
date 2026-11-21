@@ -1,0 +1,6 @@
+level,gaussian_loss_quantile,empirical_loss_quantile,ratio_empirical_to_gaussian,expected_exceedances_if_normal,observed_exceedances_of_gaussian_quantile
+0.95,0.0132983,0.0121355,0.912558,251.5,210
+0.975,0.0159202,0.0161104,1.01194,125.75,130
+0.99,0.0189688,0.0228342,1.20378,50.3,74
+0.995,0.0210447,0.0303401,1.4417,25.15,62
+0.999,0.0253249,0.0500532,1.97644,5.03,38

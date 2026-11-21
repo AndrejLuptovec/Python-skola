@@ -1,0 +1,32 @@
+{
+  "source_url": "https://raw.githubusercontent.com/manisahni/marketdata/4621dfc553a5fa52a2e7d6093072f292f0ec47fa/daily_adjclose.csv",
+  "source_commit": "4621dfc553a5fa52a2e7d6093072f292f0ec47fa",
+  "retrieval_date": "2026-11-21",
+  "sha256": "8c671f6422042beee1bb4f2dd1aa380cb7f96b7529b482275fc37e53d826f67d",
+  "file_rows": 5755,
+  "file_first_date": "2004-01-02",
+  "file_last_date": "2026-11-16",
+  "period_start": "2006-01-03",
+  "period_end": "2025-12-31",
+  "price_dates": 5031,
+  "returns": 5030,
+  "missing_prices": {
+    "SPY": 0,
+    "EEM": 0,
+    "TLT": 0,
+    "GLD": 0
+  },
+  "nonpositive_prices": {
+    "SPY": 0,
+    "EEM": 0,
+    "TLT": 0,
+    "GLD": 0
+  },
+  "duplicate_dates": 0,
+  "sorted_dates": true,
+  "infinite_returns": 0,
+  "nan_returns": 0,
+  "weekend_dates": 0,
+  "max_calendar_gap_days": 5,
+  "matches_spec_counts": true
+}
