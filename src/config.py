@@ -76,3 +76,8 @@ PRIMARY_LEVEL = 0.99               # primary comparison: 99 % VaR pinball loss, 
 # Monte Carlo seed-sensitivity check: the full copula walk-forward is re-run
 # with this alternative base seed; the primary result is NOT taken from it.
 SEED_SENSITIVITY_BASE = 20261121 + 1_000_000
+
+# --- Milestone 4: common EWMA volatility overlay (robustness check) ---------
+# Fixed by the review request; NOT tuned. sigma^2_t = L*sigma^2_{t-1} + (1-L)*r_{t-1}^2
+EWMA_LAMBDA = 0.94
+EWMA_INIT_OBS = 250   # sigma^2 at return position 250 = mean of r_0^2..r_249^2 (zero-mean)
